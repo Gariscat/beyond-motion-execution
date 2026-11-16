@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Get started with WET-OP-Bench: set up the simulation and policy environments, download the training and validation datasets, and run an evaluation.">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <title>Get Started · Beyond Motion Execution</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/style.css?v=12">
+  <link rel="stylesheet" href="../assets/get-started.css?v=2">
+  <script src="../assets/nav.js?v=8" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="../"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 4h10M13 4v9L6 25a2 2 0 0 0 1.8 3h16.4a2 2 0 0 0 1.8-3l-7-12V4M10 21h12"/><circle cx="16" cy="18" r="1"/></svg><span>BEYOND MOTION EXECUTION</span></a>
+    <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false"><span class="sr-only">Open navigation</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </header>
+  <aside class="sidebar" id="sidebar" aria-label="Site navigation">
+    <a class="brand" href="../"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 4h10M13 4v9L6 25a2 2 0 0 0 1.8 3h16.4a2 2 0 0 0 1.8-3l-7-12V4M10 21h12"/><circle cx="16" cy="18" r="1"/></svg><span>BEYOND MOTION EXECUTION</span></a>
+    <nav aria-label="Site">
+      <a class="nav-group" href="../">Bench overview</a>
+      <ul>
+        <li><a href="../#glance">At a glance</a></li>
+        <li><a href="../#about">What is WET-OP-Bench</a></li>
+        <li><a href="../#overview">Overview</a></li>
+        <li><a href="../#showcase">Task showcase</a></li>
+        <li><a href="../#details">Details</a></li>
+        <li><a href="../#results">Results</a></li>
+      </ul>
+      <a class="nav-group" href="#top" aria-current="page">Get started</a>
+      <ul>
+        <li><a href="#setup">Environment Setup</a></li>
+        <li><a href="#dataset">Dataset</a></li>
+        <li><a href="#evaluation">Run evaluation</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="sidebar-backdrop" hidden></div>
+
+  <div class="page">
+  <main id="main" class="shell guide">
+    <header class="guide-header" id="top">
+      <h1>Get Started</h1>
+      <p class="lede">Set up the training environment and the simulation server, download the datasets, then run a vision-language-action policy on the benchmark. The evaluation example uses a &pi;<sub>0.5</sub> checkpoint on Task 01 (Pour Flask to Cylinder); other tasks and checkpoints only change the arguments.</p>
+    </header>
+
+    <section id="setup" class="guide-section" aria-labelledby="setup-heading">
+      <h2 id="setup-heading"><span class="step-index">1</span>Environment Setup</h2>
+      <p>Training and evaluation use separate environments, so the policy&rsquo;s packages do not share a process with Isaac Sim. Set up three:</p>
+      <ul class="guide-list">
+        <li><b>Training environment</b> &mdash; <a href="https://github.com/Physical-Intelligence/openpi" target="_blank" rel="noopener noreferrer">OpenPI</a>, used to fine-tune a &pi;<sub>0.5</sub> checkpoint on the <a href="#dataset">training set</a>.</li>
+        <li><b>Server environment</b> &mdash; Isaac Sim, cuRobo, and the simulation server from <a href="https://github.com/InternRobotics/GenManip" target="_blank" rel="noopener noreferrer">GenManip</a>. It executes episodes and computes scores.</li>
+        <li><b>Client environment</b> &mdash; <a href="https://github.com/InternRobotics/genmanip-client" target="_blank" rel="noopener noreferrer">genmanip-client</a> (<code>gmp</code>), installed into the training environment so that environment can submit jobs and serve the policy.</li>
+      </ul>
+
+      <h3 id="prerequisites">Prerequisites</h3>
+      <ul class="guide-list">
+        <li>A Linux workstation. OpenPI is tested on Ubuntu 22.04, which is also the system GenManip&rsquo;s install guide targets.</li>
+        <li>An NVIDIA GPU. For OpenPI, inference needs more than 8&nbsp;GB, LoRA fine-tuning more than 22.5&nbsp;GB, and full fine-tuning more than 70&nbsp;GB. The simulation server can use a second GPU, or share one GPU with the policy server; see the memory note under <a href="#policy">Serve the policy</a>.</li>
+        <li>CUDA 12.1 for the server environment, and a driver compatible with that toolkit.</li>
+        <li>Isaac Sim 4.1, either already installed on the machine or installed into the server environment below. The evaluation commands on this page call <code>/isaac-sim/python.sh</code>.</li>
+      </ul>
+      <p>The commands use <code>GENMANIP_PATH</code> for the GenManip checkout and <code>POLICY_PATH</code> for a checkpoint directory. That directory contains <code>params/</code> and normalization statistics at <code>assets/&hellip;/norm_stats.json</code>. The evaluation example reads them from <code>assets/merged_500</code>.</p>
+
+      <h3>Training environment</h3>
+      <p>Clone OpenPI with its submodules and install it with <a href="https://docs.astral.sh/uv/" target="_blank" rel="noopener noreferrer">uv</a>. <code>GIT_LFS_SKIP_SMUDGE=1</code> is required because the install pulls LeRobot.</p>
+      <pre><code>git clone --recurse-submodules https://github.com/Physical-Intelligence/openpi.git
+cd openpi
+GIT_LFS_SKIP_SMUDGE=1 uv sync
+GIT_LFS_SKIP_SMUDGE=1 uv pip install -e .</code></pre>
+      <p>The training set is already in LeRobot v2.1. Each task folder is its own dataset root, so a training config should point at one task folder, not at the repository root. Add a <code>TrainConfig</code> for that folder in <code>src/openpi/training/config.py</code>, compute normalization statistics, then fine-tune. Replace <code>&lt;config_name&gt;</code> with the config you added.</p>
+      <pre><code>uv run scripts/compute_norm_stats.py --config-name &lt;config_name&gt;
+XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 uv run scripts/train.py &lt;config_name&gt; --exp-name=my_experiment --overwrite</code></pre>
+      <p>Training writes checkpoints under <code>checkpoints/</code>. Set <code>POLICY_PATH</code> to the checkpoint you will serve. The evaluation example uses the config name <code>pi05_task06_remove_centrifuge_tubes_500_h50</code>; another task uses its own config name and the same checkpoint layout.</p>
+
+      <h3>Server environment</h3>
+      <p>Clone the simulation server and record its path:</p>
+      <pre><code>git clone https://github.com/InternRobotics/GenManip.git
+cd GenManip
+export GENMANIP_PATH="$PWD"</code></pre>
+      <p>Install Isaac Sim 4.1 and a matching PyTorch build into this environment:</p>
+      <pre><code>export CUDA_HOME=/usr/local/cuda-12.1
+pip install isaacsim==4.1.0 isaacsim-extscache-kit==4.1.0 isaacsim-extscache-kit-sdk==4.1.0 isaacsim-extscache-physics==4.1.0 --extra-index-url https://pypi.nvidia.com
+pip install torch==2.4.0 --extra-index-url https://download.pytorch.org/whl/cu121</code></pre>
+      <p>If Isaac Sim is already installed, skip that install and run server commands with <code>/isaac-sim/python.sh</code>, which is what the evaluation steps below do.</p>
+      <p>Then install cuRobo and the repository requirements in the same environment:</p>
+      <pre><code>mkdir -p saved/envs
+git clone https://github.com/NVlabs/curobo.git saved/envs/curobo
+pip install -e saved/envs/curobo --no-build-isolation
+pip install -r requirements.txt</code></pre>
+      <p>Copy the <a href="#dataset">validation example</a> so that its <code>saved/assets</code>, <code>saved/tasks</code>, and task config land at those same paths in this checkout. The download does not include the simulator.</p>
+
+      <h3>Client environment</h3>
+      <p>Install the client into the training environment, beside OpenPI. It stays out of the server environment.</p>
+      <pre><code>git clone https://github.com/InternRobotics/genmanip-client.git
+cd genmanip-client
+uv pip install -e .
+gmp --help</code></pre>
+      <p><code>uv pip</code> uses the OpenPI environment. In a separate client environment the same install is <code>pip install -e .</code>.</p>
+
+      <h3>Verify</h3>
+      <p>Confirm both sides answer before <a href="#evaluation">submitting a job</a>:</p>
+      <pre><code># Server environment
+cd "$GENMANIP_PATH"
+/isaac-sim/python.sh ray_eval_server.py --help
+
+# Client environment
+gmp --help</code></pre>
+    </section>
+
+    <section id="dataset" class="guide-section" aria-labelledby="dataset-heading">
+      <h2 id="dataset-heading"><span class="step-index">2</span>Dataset</h2>
+      <p>Demonstrations and the published validation example are separate Hugging Face datasets. The evaluation episodes used in <a href="#evaluation">Run evaluation</a> are not in these downloads.</p>
+      <h3>Training set</h3>
+      <p><a href="https://huggingface.co/datasets/InternRobotics/WET-OP-Bench-Train" target="_blank" rel="noopener noreferrer">InternRobotics/WET-OP-Bench-Train</a> contains 7,000 simulated demonstrations for 14 tasks, 500 episodes each. The robot is Lift2. Each task folder is its own LeRobot v2.1 dataset, with four RGB cameras, robot state, actions, and a language instruction. Frames are 640&times;480 at 15 fps.</p>
+      <pre><code>huggingface-cli download InternRobotics/WET-OP-Bench-Train \
+    --repo-type dataset --local-dir WET-OP-Bench-Train</code></pre>
+      <h3>Validation set</h3>
+      <p><a href="https://huggingface.co/datasets/InternRobotics/WET-OP-Bench-Validation" target="_blank" rel="noopener noreferrer">InternRobotics/WET-OP-Bench-Validation</a> is one Task 01 initialization example: the flask-to-cylinder scene, robot assets, task configuration, and saved initial state. It has no recorded trajectory. It is not the full validation set and not the 680-episode evaluation set.</p>
+      <pre><code>huggingface-cli download InternRobotics/WET-OP-Bench-Validation \
+    --repo-type dataset --local-dir WET-OP-Bench-Validation</code></pre>
+    </section>
+
+    <section id="evaluation" class="guide-section" aria-labelledby="evaluation-heading">
+      <h2 id="evaluation-heading"><span class="step-index">3</span>Run evaluation</h2>
+      <p>With the environments and data in place, a run has four parts: the simulation server, a job submitted through <code>gmp</code>, a policy served over websocket, and one or more workers that connect the two.</p>
+      <ul class="guide-steps">
+        <li id="server">
+          <h3>Start the evaluation server</h3>
+          <p>The server loads Isaac Sim, executes episodes and computes scores. It keeps running across jobs.</p>
+          <pre><code>cd "$GENMANIP_PATH"
+/isaac-sim/python.sh ray_eval_server.py --host 0.0.0.0 --port 8087</code></pre>
+          <p>Wait until <code>http://127.0.0.1:8087/status</code> answers; the first startup can take several minutes.</p>
+        </li>
+        <li id="submit">
+          <h3>Submit a benchmark job</h3>
+          <p>From the policy environment, submit one task or list several targets. A <code>run_id</code> names the run and determines where results are written.</p>
+          <pre><code># One task: Task 01, all 40 test episodes
+gmp submit scientific_experiments/task_01_pour_flask_to_cylinder/test \
+    --run_id my_first_run --host 127.0.0.1 --port 8087
+
+# Full benchmark: pass all 20 task targets, e.g.
+#   scientific_experiments/task_01_pour_flask_to_cylinder/test ... task_z6_evaporative_crystallization_prep/test</code></pre>
+          <p>Demonstrated tasks (01&ndash;14) run 40 episodes across the C-only, B-only, I-only and Mixed test settings; zero-shot tasks (z1&ndash;z6) run 20 Mixed episodes each. Episodes are claimed through server-side locks, so additional workers and repeated submissions skip completed episodes instead of duplicating them.</p>
+        </li>
+        <li id="policy">
+          <h3>Serve the policy</h3>
+          <p>Expose the checkpoint through OpenPI&rsquo;s websocket policy server:</p>
+          <pre><code>python scripts/serve_policy.py --port 18100 \
+    policy:checkpoint \
+    --policy.config pi05_task06_remove_centrifuge_tubes_500_h50 \
+    --policy.dir "$POLICY_PATH" \
+    --policy.norm-stats-dir "$POLICY_PATH/assets/merged_500"</code></pre>
+          <p>The server is ready when <code>http://127.0.0.1:18100/healthz</code> responds. On a single shared GPU, prevent the policy framework from pre-allocating all memory so the simulator still fits:</p>
+          <pre><code>export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export XLA_PYTHON_CLIENT_MEM_FRACTION=0.40</code></pre>
+        </li>
+        <li id="workers">
+          <h3>Connect evaluation workers</h3>
+          <p>Each worker rolls out episodes: it pulls observations from the simulation server, queries the policy for action chunks and steps the environment. Start one worker per GPU capacity slice; two workers per server is a typical setting.</p>
+          <pre><code>python scripts/pi05_task05_client.py \
+    --worker_ids 0 \
+    --run_id my_first_run \
+    --horizon 30 \
+    --head_camera overlook \
+    --eval_host 127.0.0.1 --eval_port 8087 \
+    --model_host 127.0.0.1 --model_port 18100</code></pre>
+          <p>The control setup used for the reported results: joint-position actions, a fixed overlook head camera, a model action horizon of 50 with replanning every 30 steps. Workers exit on their own once every episode of the submitted job is done.</p>
+        </li>
+        <li id="results">
+          <h3>Read results</h3>
+          <p>Track progress while the job runs and inspect per-episode outcomes afterwards:</p>
+          <pre><code>gmp status --host 127.0.0.1 --port 8087
+
+# One result_info.json per episode, with success and stage-wise scores:
+saved/eval_results/scientific_experiments/&lt;run_id&gt;/</code></pre>
+          <p>An episode is complete when its <code>result_info.json</code> exists; Task&nbsp;01 is done at 40 files, the full benchmark at 680. Each file records binary success and the stage-wise, skill-aligned scores described on the <a href="../#overview">overview page</a>.</p>
+        </li>
+      </ul>
+    </section>
+  </main>
+  <footer class="shell footer"><span>Beyond Motion Execution</span><a href="#top">Back to top <span aria-hidden="true">&uarr;</span></a></footer>
+  </div>
+</body>
+</html>
+

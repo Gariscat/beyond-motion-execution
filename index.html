@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="WET-OP-Bench: a 20-task dual-arm simulation benchmark for wet-lab operations and procedures. Task overview, task showcases and data splits.">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <title>Beyond Motion Execution: Benchmarking Embodied Agents on Wet-Lab Operations and Procedures</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css?v=12">
+  <script src="assets/terminology.js?v=8" defer></script>
+  <script src="assets/tasks.js?v=9" defer></script>
+  <script src="assets/nav.js?v=8" defer></script>
+  <script src="assets/app.js?v=9" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 4h10M13 4v9L6 25a2 2 0 0 0 1.8 3h16.4a2 2 0 0 0 1.8-3l-7-12V4M10 21h12"/><circle cx="16" cy="18" r="1"/></svg><span>BEYOND MOTION EXECUTION</span></a>
+    <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false"><span class="sr-only">Open navigation</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </header>
+  <aside class="sidebar" id="sidebar" aria-label="Site navigation">
+    <a class="brand" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 4h10M13 4v9L6 25a2 2 0 0 0 1.8 3h16.4a2 2 0 0 0 1.8-3l-7-12V4M10 21h12"/><circle cx="16" cy="18" r="1"/></svg><span>BEYOND MOTION EXECUTION</span></a>
+    <nav aria-label="Site">
+      <a class="nav-group" href="#top" aria-current="page">Bench overview</a>
+      <ul>
+        <li><a href="#glance">At a glance</a></li>
+        <li><a href="#about">What is WET-OP-Bench</a></li>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#showcase">Task showcase</a></li>
+        <li><a href="#details">Details</a></li>
+        <li><a href="#results">Results</a></li>
+      </ul>
+      <a class="nav-group" href="get-started/">Get started</a>
+      <ul>
+        <li><a href="get-started/#setup">Environment Setup</a></li>
+        <li><a href="get-started/#dataset">Dataset</a></li>
+        <li><a href="get-started/#evaluation">Run evaluation</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="sidebar-backdrop" hidden></div>
+
+  <div class="page">
+  <main id="main">
+    <div id="top" class="hero shell">
+      <h1 id="page-title"><span class="paper-title-lead">Beyond Motion Execution:</span> <span class="paper-title-subtitle">Benchmarking Embodied Agents on Wet-Lab Operations and Procedures</span></h1>
+      <nav class="hero-links" aria-label="Project links">
+        <a class="hero-link" href="get-started/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/><path d="M8 10l3 3-3 3M13 16h4"/></svg><span>Get started</span></a>
+        <a class="hero-link" href="https://github.com/InternRobotics/GenManip" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-3.9c.1-1-.3-1.8-.8-2.3 2.7-.3 5.6-1.3 5.6-6A4.7 4.7 0 0 0 18.5 5a4.4 4.4 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.7 11.7 0 0 0-6 0C6.6 1.5 5.6 1.8 5.6 1.8a4.4 4.4 0 0 0-.1 3.2 4.7 4.7 0 0 0-1.3 3.8c0 4.7 2.9 5.7 5.6 6-.5.5-.8 1.2-.8 2.3V21M9 18c-3 .9-3-1.5-4-2"/></svg><span>Github</span></a>
+        <a class="hero-link" href="https://genmanip.com/overview" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H11v17H6.5A2.5 2.5 0 0 0 4 21.5zM20 4.5A2.5 2.5 0 0 0 17.5 2H13v17h4.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg><span>Docs</span></a>
+      </nav>
+      <figure class="teaser">
+        <a class="teaser-image" href="assets/figures/benchmark-overview.jpg" target="_blank" rel="noopener noreferrer" tabindex="-1"><picture><source srcset="assets/figures/benchmark-overview.webp" type="image/webp"><img src="assets/figures/benchmark-overview.jpg" width="3726" height="1407" alt="Benchmark overview. Four operation families and six zero-shot tasks surround a summary wheel of 14 atomic skills, the dual-arm Lift2, 14 demonstrated tasks, 500 training episodes each, and four generalization settings. The right side shows a titration that scores 0.4 and fails by overshooting, plus capability profiles and success-rate and stage-score summaries for InternW0-Δ, OpenWAM, π0.5, and Qwen+π0.5." decoding="async" fetchpriority="high"></picture></a>
+        <figcaption><span><b>Benchmark overview.</b> Fourteen demonstrated tasks and six zero-shot tasks span four operation families. Stage-wise scoring keeps partial progress visible: the titration example earns a process score of 0.4 and fails because it overshoots the endpoint. Results compare InternW0-Δ, OpenWAM, π0.5, and Qwen+π0.5 on demonstrated tasks, zero-shot tasks, and all 20 tasks.</span><a href="assets/figures/benchmark-overview.jpg" target="_blank" rel="noopener noreferrer">Open full figure <span aria-hidden="true">↗</span></a></figcaption>
+      </figure>
+    </div>
+
+    <section id="glance" class="page-section glance shell" aria-labelledby="glance-heading">
+      <h2 id="glance-heading">Benchmark at a Glance</h2>
+      <div class="key-stats" aria-label="Key statistics">
+        <div><strong>20</strong><span class="stat-label">Laboratory tasks</span><span class="stat-detail">14 demonstrated and 6 zero-shot, across four operation families</span></div>
+        <div><strong>14</strong><span class="stat-label">Atomic skills</span><span class="stat-detail">Composed into 12 basic operations and 8 experimental procedures</span></div>
+        <div><strong>7,000</strong><span class="stat-label">Task demonstrations</span><span class="stat-detail">500 per demonstrated task, varying task configuration, background and instruction</span></div>
+        <div><strong>680</strong><span class="stat-label">Evaluation episodes per model</span><span class="stat-detail">40 per demonstrated task over four test settings, 20 per zero-shot task</span></div>
+      </div>
+      <h3 class="glance-subheading">Key features</h3>
+      <ul class="feature-grid">
+        <li><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c3.2 4.1 6 7.3 6 10.6a6 6 0 0 1-12 0c0-3.3 2.8-6.5 6-10.6z"/><path d="M9.2 14.6a2.9 2.9 0 0 0 2.6 2.6"/></svg></span><h4>Dynamic liquid transfer</h4><p>Pouring moves simulated liquid between vessels. Metrics check how much reaches the target and how much is retained, such as ≥80% transferred or ≥95% kept in the beaker.</p></li>
+        <li><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 14a7.5 7.5 0 0 1 15 0"/><path d="M12 14l3.6-4.2"/><circle cx="12" cy="14" r="1.2"/><path d="M4 19h16"/></svg></span><h4>Instruments and readouts</h4><p>The centrifuge, drying oven, burette and analytical balance respond to buttons, doors, knobs and stopcocks. The balance shows a mass readout, and two tasks require reaching a target mass.</p></li>
+        <li><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5M10.5 3.5v6L5.2 18.4a1.4 1.4 0 0 0 1.2 2.1h11.2a1.4 1.4 0 0 0 1.2-2.1L13.5 9.5v-6"/><path d="M7.6 15.5h8.8"/></svg></span><h4>Reaction observation</h4><p>Appearance changes with the procedure. Five tasks require observing the result, such as a pale-pink titration endpoint, the blue-bottle color cycle, a brick-red precipitate or a silver mirror.</p></li>
+        <li><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5h16"/><path d="M6 19.5v-4h3.5v4M10.25 19.5v-8h3.5v8M14.5 19.5v-12H18v12"/></svg></span><h4>Skill-aligned stage scores</h4><p>Each episode receives binary success and a stage-wise score whose metrics are tagged with atomic skills, so partial progress and the point of failure stay visible.</p></li>
+        <li><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3.5l9 10H20M4 17h3.5l2.6-2.9M13.9 9.9 16.5 7H20"/><path d="M17.5 4.5 20 7l-2.5 2.5M17.5 14.5 20 17l-2.5 2.5"/></svg></span><h4>Two generalization tests</h4><p>Demonstrated tasks are tested under task-configuration, background and instruction shifts, one at a time and mixed. Six zero-shot tasks have no demonstrations and test new operation compositions and experimental conditions.</p></li>
+        <li><span class="feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7.5 4v9l-7.5 4-7.5-4v-9z"/><path d="M4.5 7.5l7.5 4 7.5-4M12 11.5v9"/></svg></span><h4>Dual-arm robot, real-to-sim assets</h4><p>All tasks use the dual-arm Lift2 robot. Laboratory assets come from Lab2Sim, an agentic pipeline that builds them from object specifications and admits them only after geometry, articulation and physics checks.</p></li>
+      </ul>
+    </section>
+
+    <section id="about" class="page-section about shell" aria-labelledby="about-heading">
+      <div class="about-text">
+        <h2 id="about-heading">What is WET-OP-Bench?</h2>
+        <p>WET-OP-Bench is a dual-arm simulation benchmark of 20 wet-lab tasks. In a laboratory, completing the right motions is not enough: an agent can still spill a reagent, miss a target mass, or overshoot a titration endpoint. The simulator therefore couples manipulation with evolving experimental states, including dynamic liquid transfer, quantitative instrument readouts, and procedure-conditioned color changes, and the same states drive both what the agent observes and how success is checked. Tasks are built from a shared set of atomic manipulation skills and range from basic operations to multi-step experimental procedures. Fourteen tasks come with demonstrations and are tested under controlled task-configuration, background, and instruction variations; the other six have no demonstrations and test zero-shot generalization to new operation compositions and experimental conditions. Every episode is scored by binary success and by a stage-wise score whose metrics are aligned with atomic skills, so partial progress and failures remain visible.</p>
+      </div>
+    </section>
+
+    <section id="overview" class="page-section suite-section shell" aria-labelledby="suite-heading">
+      <h2 id="suite-heading">Overview of the 20-Task Benchmark</h2>
+      <div class="suite-scroll" role="region" aria-label="Task overview table; scroll horizontally on small screens" tabindex="0"><table id="task-suite-table"><caption class="sr-only">Task names, operation families, scope, four capability dimensions and distinctive skills. Explanations follow the table.</caption><thead><tr><th scope="col">ID</th><th scope="col">Family</th><th scope="col">Task</th><th scope="col">Scope</th><th scope="col">Horizon</th><th scope="col">Precision</th><th scope="col"><abbr title="Quantitative-target requirement">Q</abbr></th><th scope="col"><abbr title="Reaction-observation requirement">R</abbr></th><th scope="col">Distinctive skills</th></tr></thead></table></div>
+      <dl class="table-key">
+        <div><dt>Family</dt><dd><b>HP</b>: Handling &amp; Placement, <b>TM</b>: Transfer &amp; Mixing, <b>IO</b>: Instrument Operation, <b>MD</b>: Measurement &amp; Dosing. Tasks that combine two families show both, such as IO + TM.</dd></div>
+        <div><dt>Scope</dt><dd><b>Op.</b>: basic operation, <b>Proc.</b>: experimental procedure.</dd></div>
+        <div><dt>Horizon</dt><dd>Number of atomic-skill steps. <b>Short</b>: 1–5 steps, <b>Medium</b>: 6–10 steps, <b>Long</b>: more than 10 steps.</dd></div>
+        <div><dt>Precision</dt><dd>Required positional accuracy. <b>Low</b>: tolerance above 2 cm, <b>Medium</b>: above 5 mm and up to 2 cm, <b>High</b>: 5 mm or less.</dd></div>
+        <div><dt>Q</dt><dd>Quantitative-target requirement. <b>Yes</b>: success requires reaching a specified quantitative target rather than merely obtaining a numerical readout, <b>No</b>: no quantitative target.</dd></div>
+        <div><dt>R</dt><dd>Reaction-observation requirement. <b>Yes</b>: success requires observing a reaction-induced visual state (a titration endpoint, precipitate formation or color change), <b>No</b>: no reaction observation.</dd></div>
+        <div><dt>Distinctive skills</dt><dd>Representative atomic skills of each task. Every skill a task uses is listed in its metrics under Task showcase.</dd></div>
+      </dl>
+    </section>
+
+    <section id="showcase" class="page-section gallery" aria-labelledby="gallery-heading">
+      <div class="shell gallery-intro"><h2 id="gallery-heading">Task Showcases</h2><span id="result-count" class="result-count" role="status" aria-live="polite">20 tasks</span></div>
+      <div class="toolbar-wrapper">
+        <div class="toolbar shell" role="group" aria-label="Filter tasks">
+          <div id="filters" class="filters"></div>
+          <button id="reset-filters" class="text-button" type="button" hidden>Reset filters</button>
+          <label class="speed-control" for="playback-speed">Video speed <select id="playback-speed"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+        </div>
+      </div>
+      <div class="shell gallery-body">
+        <section id="training-section" class="task-section" aria-labelledby="training-heading"><div class="section-heading"><span class="section-index">14 tasks</span><h3 id="training-heading">Demonstrated Tasks</h3></div><div id="training-grid" class="task-grid"></div></section>
+        <section id="ood-section" class="task-section ood-section" aria-labelledby="ood-heading"><div class="section-heading"><span class="section-index">6 tasks</span><h3 id="ood-heading">Zero-shot Tasks</h3></div><div id="ood-grid" class="task-grid"></div></section>
+        <div id="empty-state" class="empty-state" hidden><h3>No matching tasks</h3><p>Select more options in one of the filters.</p><button id="empty-reset" class="text-button" type="button">Reset filters</button></div>
+      </div>
+    </section>
+
+    <section id="details" class="page-section details shell" aria-labelledby="details-heading">
+      <h2 id="details-heading">Details</h2>
+      <p class="details-lead">Training data and evaluation settings are built from three variation dimensions. Demonstrated tasks test within-task generalization; zero-shot tasks test cross-task generalization.</p>
+      <div class="details-scroll" role="region" aria-label="Data splits and generalization settings" tabindex="0">
+        <table class="details-table">
+          <caption class="sr-only">Data splits and generalization settings</caption>
+          <thead><tr><th scope="col">Task split</th><th scope="col">Data</th><th scope="col">Construction</th><th scope="col">Test setting</th><th scope="col">Episodes per task</th><th scope="col">Generalization</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" rowspan="2">Demonstrated<br><span>Tasks 01–14</span></th><td>Train</td><td>500 demonstrations per task. Every episode combines a task-configuration, a background and an instruction variant.</td><td>—</td><td class="number">500</td><td>—</td></tr>
+            <tr><td>Test</td><td>Same tasks, objectives and operation structure as in training.</td><td>C-only, B-only, I-only and Mixed (C+B+I), 10 episodes each</td><td class="number">40</td><td><strong>Within-task</strong>: robustness to controlled physical, visual and language variation</td></tr>
+            <tr><th scope="row">Zero-shot<br><span>Tasks 15–20</span></th><td>Test</td><td>No task-specific demonstrations. Operation families and atomic skills also appear in the demonstrated tasks.</td><td>Mixed (C+B+I)</td><td class="number">20</td><td><strong>Cross-task</strong>: new operation compositions and/or experimental conditions</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <dl class="variation-list">
+        <div><dt>Task configuration (C)</dt><dd><span class="variant-count">50 variants per task</span>Task-relevant physical or experimental parameters: object positions, liquid amount or color where applicable, and the duration of time-dependent steps.</dd></div>
+        <div><dt>Background (B)</dt><dd><span class="variant-count">10 variants per task</span>Task-irrelevant visual context: tabletop appearance, room background and illumination.</dd></div>
+        <div><dt>Instruction (I)</dt><dd><span class="variant-count">20 variants per task</span>The level of descriptive detail in the language instruction, with the same task semantics. Task cards show the canonical instruction, which states the scored requirements, including intermediate transfers, opposite-slot centrifuge loading, and the final upright reset.</dd></div>
+      </dl>
+      <p class="details-note">Training episodes vary C, B and I jointly. In the test settings, C-only, B-only and I-only each shift one dimension in isolation, and Mixed (C+B+I) varies all three jointly; task identity, objective and operation structure stay the same as in training. Zero-shot tasks are evaluated only under Mixed (C+B+I).</p>
+    </section>
+
+    <section id="results" class="page-section results shell" aria-labelledby="results-heading">
+      <h2 id="results-heading">Results</h2>
+      <p class="details-lead">Task success stays below the stage score for every model. On the 14 demonstrated tasks, InternW0-Δ reaches 34.6 ± 1.1% success and a stage score of 60.5 ± 1.0, ahead of π0.5 (25.2 ± 1.4% and 51.2 ± 0.4), OpenWAM (22.7 ± 0.5% and 55.2 ± 0.5), and Qwen+π0.5 (20.8% and 42.4). Across all 20 tasks, InternW0-Δ reaches 24.5 ± 0.9% and 47.0 ± 0.8, compared with 17.6 ± 1.0% and 39.9 ± 0.3 for π0.5, 16.0 ± 0.3% and 42.5 ± 0.4 for OpenWAM, and 14.6% and 33.3 for Qwen+π0.5.</p>
+      <div class="details-scroll" role="region" aria-label="Results by operation family" tabindex="0">
+        <table class="details-table results-table results-main">
+          <caption class="sr-only">Success rate and stage score by operation family, for demonstrated tasks, zero-shot tasks, and all 20 tasks.</caption>
+          <thead>
+            <tr>
+              <th scope="col" rowspan="2">Model</th>
+              <th scope="colgroup" colspan="2">HP (3)</th>
+              <th scope="colgroup" colspan="2">TM (4)</th>
+              <th scope="colgroup" colspan="2">IO (4)</th>
+              <th scope="colgroup" colspan="2">MD (3)</th>
+              <th scope="colgroup" colspan="2">Demo (14)</th>
+              <th scope="colgroup" colspan="2">Zero-shot (6)</th>
+              <th scope="colgroup" colspan="2">All (20)</th>
+            </tr>
+            <tr>
+              <th scope="col">SR</th><th scope="col">Score</th>
+              <th scope="col">SR</th><th scope="col">Score</th>
+              <th scope="col">SR</th><th scope="col">Score</th>
+              <th scope="col">SR</th><th scope="col">Score</th>
+              <th scope="col">SR</th><th scope="col">Score</th>
+              <th scope="col">SR</th><th scope="col">Score</th>
+              <th scope="col">SR</th><th scope="col">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">π0.5</th><td>47.2</td><td class="best">67.0</td><td>4.2</td><td>23.5</td><td>32.9</td><td>75.5</td><td>20.8</td><td>39.9</td><td>25.2</td><td>51.2</td><td>0.0</td><td>13.7</td><td>17.6</td><td>39.9</td></tr>
+            <tr><th scope="row">OpenWAM</th><td>51.1</td><td>65.5</td><td>7.5</td><td>42.7</td><td>25.4</td><td>76.1</td><td>10.8</td><td>33.8</td><td>22.7</td><td>55.2</td><td>0.3</td><td>12.7</td><td>16.0</td><td>42.5</td></tr>
+            <tr><th scope="row">InternW0-Δ</th><td class="best">55.3</td><td>65.8</td><td class="best">21.0</td><td class="best">50.8</td><td class="best">42.1</td><td class="best">83.5</td><td class="best">21.9</td><td>37.3</td><td class="best">34.6</td><td class="best">60.5</td><td class="best">0.8</td><td class="best">15.5</td><td class="best">24.5</td><td class="best">47.0</td></tr>
+            <tr><th scope="row">Qwen+π0.5</th><td>39.3</td><td>58.0</td><td>1.9</td><td>15.1</td><td>26.9</td><td>59.5</td><td>19.4</td><td class="best">40.6</td><td>20.8</td><td>42.4</td><td>0.0</td><td>12.0</td><td>14.6</td><td>33.3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="details-note">Success rate (SR, %) and stage score (0–100). Demonstrated columns pool C-only, B-only, I-only, and Mixed, with 40 episodes per task per run. All (20) is the task-balanced mean. π0.5, OpenWAM, and InternW0-Δ are each fine-tuned for 100k steps on the 14 demonstrated tasks, with global batch size 256, and the headline ± values are the standard deviation over three runs of 680 episodes. Qwen+π0.5 is Qwen3.8-Flash planning over frozen π0.5, with task memory and in-context demonstrations turned off; its numbers are one run of 246 completed episodes and have no standard deviation. Bold marks the best value in a column.</p>
+      <h3>Within-task generalization and zero-shot transfer</h3>
+      <div class="details-scroll" role="region" aria-label="Generalization and zero-shot results" tabindex="0">
+        <table class="details-table results-table results-gen">
+          <caption class="sr-only">Success rate and stage score for each within-task setting and for the six zero-shot tasks. Each cell is success rate, then stage score.</caption>
+          <thead>
+            <tr><th scope="col">Split / setting</th><th scope="col">InternW0-Δ</th><th scope="col">OpenWAM</th><th scope="col">π0.5</th><th scope="col">Qwen+π0.5</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">C-only (demo)</th><td class="best">34.3 / 60.7</td><td>22.6 / 54.9</td><td>24.0 / 50.0</td><td>— / —</td></tr>
+            <tr><th scope="row">B-only (demo)</th><td class="best">33.1 / 58.7</td><td>24.5 / 56.2</td><td>28.6 / 54.0</td><td>27.4 / 45.3</td></tr>
+            <tr><th scope="row">I-only (demo)</th><td class="best">35.2 / 61.0</td><td>23.3 / 56.4</td><td>23.8 / 49.8</td><td>— / —</td></tr>
+            <tr><th scope="row">Mixed (demo)</th><td class="best">35.7 / 61.4</td><td>20.2 / 53.4</td><td>24.3 / 50.9</td><td>19.0 / 41.6</td></tr>
+            <tr><th scope="row">All demo settings</th><td class="best">34.6 / 60.5</td><td>22.7 / 55.2</td><td>25.2 / 51.2</td><td>20.8 / 42.4</td></tr>
+            <tr><th scope="row">Zero-shot (6 tasks)</th><td class="best">0.8 / 15.5</td><td>0.3 / 12.7</td><td>0.0 / 13.7</td><td>0.0 / 12.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="details-note">Cells are success rate (%) / stage score (0–100). Qwen+π0.5 has no C-only or I-only episodes in the completed run. On the six held-out tasks every model stays below 1% success. Partial stage credit comes mainly from opening steps that match a demonstrated operation.</p>
+    </section>
+  </main>
+
+  <footer class="shell footer"><span>Beyond Motion Execution</span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></footer>
+  </div>
+
+  <dialog id="image-dialog" aria-labelledby="image-dialog-title">
+    <div class="dialog-toolbar"><div><span class="dialog-eyebrow">Zero-shot task</span><h2 id="image-dialog-title"></h2></div><button class="close-dialog" type="button" aria-label="Close image viewer">×</button></div>
+    <img id="dialog-image" alt="" width="1280" height="960">
+    <div class="dialog-footer"><span>1280 × 960</span><a id="original-image" target="_blank" rel="noopener noreferrer">Open full-resolution image <span aria-hidden="true">↗</span></a></div>
+  </dialog>
+  <noscript><p class="noscript-message">Please enable JavaScript to browse the interactive task gallery.</p></noscript>
+</body>
+</html>
